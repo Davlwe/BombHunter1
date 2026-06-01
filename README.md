@@ -6,7 +6,7 @@ A grid-based puzzle-strategy game built with [raylib](https://www.raylib.com/). 
 
 ## 🌐 Play in Browser
 
-**[▶ Play Now](https://YOUR_USERNAME.github.io/BombHunter/)** — no download, no install, works on any device.
+**[▶ Play Now](https://davlwe.github.io/BombHunter1/)** — no download, no install, works on any device.
 
 *Or run locally after a web build: `cd build-web && python3 -m http.server 8000`*
 
@@ -46,7 +46,7 @@ cmake --build build
 
 ## 📦 Download Pre-built Binaries
 
-Pre-built binaries for macOS, Linux, and Windows are available on the [Releases](https://github.com/YOUR_USERNAME/BombHunter/releases) page.
+Pre-built binaries for macOS, Linux, and Windows are available on the [Releases](https://github.com/Davlwe/BombHunter1/releases) page.
 
 ## 🏗️ Building from Source
 
