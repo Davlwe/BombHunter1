@@ -21,11 +21,6 @@ jobs:
             artifact-name: BombHunter-macOS-arm64
             binary: build/BombHunter
 
-          - name: Linux (x86_64)
-            os: ubuntu-22.04
-            artifact-name: BombHunter-Linux-x86_64
-            binary: build/BombHunter
-
           - name: Windows (x86_64)
             os: windows-latest
             artifact-name: BombHunter-Windows-x86_64
@@ -34,37 +29,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libx11-dev libxrandr-dev libxinerama-dev \
-            libxcursor-dev libxi-dev libgl1-mesa-dev \
-            libasound2-dev
-
-      - name: Configure (macOS / Linux)
-        if: runner.os != 'Windows'
+      - name: Configure (macOS)
+        if: runner.os == 'macOS'
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Configure (Windows)
         if: runner.os == 'Windows'
         run: cmake -B build
 
-      - name: Build (macOS / Linux)
-        if: runner.os != 'Windows'
-        id: build_step
-        run: |
-          set -o pipefail
-          cmake --build build --parallel 2>&1 | tee build-log.txt
-        shell: bash
-
-      - name: Upload Linux build log
-        if: runner.os == 'Linux' && failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-build-log
-          path: build-log.txt
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: cmake --build build --parallel
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
@@ -75,7 +50,6 @@ jobs:
         run: |
           mkdir -p artifact
           cp "${{ matrix.binary }}" artifact/
-          # Find levels folder (may be next to binary or in build root)
           BIN_DIR="$(dirname "${{ matrix.binary }}")"
           if [ -d "$BIN_DIR/levels" ]; then
             cp -r "$BIN_DIR/levels" artifact/
