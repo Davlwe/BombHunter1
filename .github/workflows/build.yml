@@ -46,6 +46,8 @@ jobs:
       - name: Configure (macOS / Linux)
         if: runner.os != 'Windows'
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+        env:
+          CFLAGS: "-Wno-error=implicit-function-declaration"
 
       - name: Configure (Windows)
         if: runner.os == 'Windows'
