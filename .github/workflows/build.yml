@@ -18,21 +18,18 @@ jobs:
         include:
           - name: macOS (ARM64)
             os: macos-latest
-            cmake-args: ""
             artifact-name: BombHunter-macOS-arm64
-            binary-path: build/BombHunter
+            binary: build/BombHunter
 
           - name: Linux (x86_64)
             os: ubuntu-latest
-            cmake-args: ""
             artifact-name: BombHunter-Linux-x86_64
-            binary-path: build/BombHunter
+            binary: build/BombHunter
 
           - name: Windows (x86_64)
             os: windows-latest
-            cmake-args: ""
             artifact-name: BombHunter-Windows-x86_64
-            binary-path: build/BombHunter.exe
+            binary: build/BombHunter.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -46,18 +43,36 @@ jobs:
             libxcursor-dev libxi-dev libgl1-mesa-dev \
             libasound2-dev libudev-dev
 
-      - name: Configure CMake
-        run: cmake -B build ${{ matrix.cmake-args }} -DCMAKE_BUILD_TYPE=Release
+      - name: Configure (macOS / Linux)
+        if: runner.os != 'Windows'
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -B build
+
+      - name: Build (macOS / Linux)
+        if: runner.os != 'Windows'
+        run: cmake --build build --parallel
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
         run: cmake --build build --config Release --parallel
 
       - name: Package artifact
         shell: bash
         run: |
           mkdir -p artifact
-          cp "${{ matrix.binary-path }}" artifact/
-          cp -r build/levels artifact/ 2>/dev/null || cp -r levels artifact/
+          cp "${{ matrix.binary }}" artifact/
+          # Find levels folder (may be next to binary or in build root)
+          BIN_DIR="$(dirname "${{ matrix.binary }}")"
+          if [ -d "$BIN_DIR/levels" ]; then
+            cp -r "$BIN_DIR/levels" artifact/
+          elif [ -d "build/levels" ]; then
+            cp -r build/levels artifact/
+          else
+            cp -r levels artifact/
+          fi
           echo "Bomb Hunter — built from ${{ github.sha }}" > artifact/README.txt
 
       - name: Upload artifact
@@ -66,7 +81,6 @@ jobs:
           name: ${{ matrix.artifact-name }}
           path: artifact/
 
-  # On release, create a single zip per platform and attach to the release
   release:
     if: github.event_name == 'release'
     needs: build
