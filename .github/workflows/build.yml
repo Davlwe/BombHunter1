@@ -53,7 +53,18 @@ jobs:
 
       - name: Build (macOS / Linux)
         if: runner.os != 'Windows'
-        run: cmake --build build --parallel
+        id: build_step
+        run: |
+          set -o pipefail
+          cmake --build build --parallel 2>&1 | tee build-log.txt
+        shell: bash
+
+      - name: Upload Linux build log
+        if: runner.os == 'Linux' && failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build-log
+          path: build-log.txt
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
