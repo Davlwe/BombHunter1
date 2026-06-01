@@ -22,7 +22,7 @@ jobs:
             binary: build/BombHunter
 
           - name: Linux (x86_64)
-            os: ubuntu-latest
+            os: ubuntu-22.04
             artifact-name: BombHunter-Linux-x86_64
             binary: build/BombHunter
 
@@ -41,12 +41,11 @@ jobs:
           sudo apt-get install -y \
             libx11-dev libxrandr-dev libxinerama-dev \
             libxcursor-dev libxi-dev libgl1-mesa-dev \
-            libasound2-dev libwayland-dev libxkbcommon-dev \
-            libegl1-mesa-dev
+            libasound2-dev
 
       - name: Configure (macOS / Linux)
         if: runner.os != 'Windows'
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_STANDARD=99
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Configure (Windows)
         if: runner.os == 'Windows'
