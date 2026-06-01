@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bomb Hunter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #141c28;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, 'Segoe UI', sans-serif;
+        }
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        canvas#canvas {
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            max-width: 100vw;
+            max-height: 80vh;
+        }
+        .controls {
+            color: #8899aa;
+            font-size: 13px;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        .controls span { color: #ccd6e0; font-weight: 600; }
+        .status {
+            display: none;
+            color: #ffcc00;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+        <div class="controls">
+            <span>Arrow Keys / WASD</span> &nbsp;Move&nbsp;&nbsp;|&nbsp;&nbsp;
+            <span>E</span> &nbsp;Place Bomb&nbsp;&nbsp;|&nbsp;&nbsp;
+            <span>Q</span> &nbsp;Detonate
+        </div>
+        <div class="status" id="status">Loading...</div>
+    </div>
+    <script>
+        // Show status until the game canvas takes over
+        const status = document.getElementById('status');
+        status.style.display = 'block';
+        window.addEventListener('load', () => {
+            setTimeout(() => { status.style.display = 'none'; }, 2000);
+        });
+    </script>
+    {{{ SCRIPT }}}
+</body>
+</html>

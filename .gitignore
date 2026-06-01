@@ -1,0 +1,22 @@
+# Build output
+build/
+build-web/
+out/
+cmake-build-*/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Claude Code settings (local only)
+.claude/
+
+# CMake generated
+CMakeUserPresets.json

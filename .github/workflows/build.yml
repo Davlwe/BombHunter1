@@ -1,0 +1,96 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS (ARM64)
+            os: macos-latest
+            cmake-args: ""
+            artifact-name: BombHunter-macOS-arm64
+            binary-path: build/BombHunter
+
+          - name: Linux (x86_64)
+            os: ubuntu-latest
+            cmake-args: ""
+            artifact-name: BombHunter-Linux-x86_64
+            binary-path: build/BombHunter
+
+          - name: Windows (x86_64)
+            os: windows-latest
+            cmake-args: ""
+            artifact-name: BombHunter-Windows-x86_64
+            binary-path: build/BombHunter.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev libxrandr-dev libxinerama-dev \
+            libxcursor-dev libxi-dev libgl1-mesa-dev \
+            libasound2-dev libudev-dev
+
+      - name: Configure CMake
+        run: cmake -B build ${{ matrix.cmake-args }} -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Package artifact
+        shell: bash
+        run: |
+          mkdir -p artifact
+          cp "${{ matrix.binary-path }}" artifact/
+          cp -r build/levels artifact/ 2>/dev/null || cp -r levels artifact/
+          echo "Bomb Hunter — built from ${{ github.sha }}" > artifact/README.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: artifact/
+
+  # On release, create a single zip per platform and attach to the release
+  release:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release archives
+        run: |
+          cd artifacts
+          for dir in */; do
+            name="${dir%/}"
+            if [[ "$name" == *"Windows"* ]]; then
+              zip -r "../${name}.zip" "$dir"
+            else
+              tar -czf "../${name}.tar.gz" "$dir"
+            fi
+          done
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/*.tar.gz
+            artifacts/*.zip
