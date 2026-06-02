@@ -16,13 +16,18 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             font-family: -apple-system, 'Segoe UI', sans-serif;
         }
+        /* Scale canvas to fit viewport while keeping aspect ratio */
         canvas#canvas {
             display: block;
             border-radius: 6px;
             box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            max-width: 95vw;
+            max-height: 82vh;
+            width: auto !important;
+            height: auto !important;
         }
         .controls {
             color: #8899aa;
@@ -34,7 +39,7 @@
         #loading {
             color: #ffcc00;
             font-size: 14px;
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: rgba(0,0,0,0.4);
             border-radius: 6px;
         }
@@ -49,11 +54,9 @@
     </div>
     <div id="loading">Loading...</div>
     <script>
-        // Auto-focus canvas for keyboard input
         var canvas = document.getElementById('canvas');
         canvas.focus();
         canvas.addEventListener('click', function() { canvas.focus(); });
-        // Hide loading message once game starts
         var loading = document.getElementById('loading');
         var check = setInterval(function() {
             if (document.querySelector('canvas') && document.querySelector('canvas').width > 0) {
