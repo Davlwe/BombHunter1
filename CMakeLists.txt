@@ -77,7 +77,7 @@ if(WEB_BUILD)
         "SHELL:-s ASYNCIFY"
         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
         "SHELL:-s TOTAL_STACK=5MB"
-        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/levels@/levels"
+        "SHELL:--embed-file ${CMAKE_SOURCE_DIR}/levels@/levels"
         "SHELL:--shell-file ${CMAKE_SOURCE_DIR}/src/shell.html"
     )
 elseif(APPLE)
