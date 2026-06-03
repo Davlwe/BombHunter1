@@ -14,6 +14,12 @@ void Level::LoadFromFile(int index)
     // Find levels relative to the executable, not the current working directory.
     // This makes the game work wherever it's launched from (double-click, terminal, etc.).
     std::string basePath = GetApplicationDirectory();
+#ifdef PLATFORM_WEB
+    // On web, GetApplicationDirectory() returns "" (no OS-specific path).
+    // Level data is embedded at /levels/ via --embed-file, so use absolute path.
+    if (basePath.empty() || basePath == "/")
+        basePath = "/";
+#endif
     std::string filename = basePath + "levels/level" + std::to_string(index) + ".txt";
     std::ifstream file(filename);
 

@@ -37,13 +37,20 @@ jobs:
       - name: Rename to index.html
         run: mv build-web/BombHunter.html build-web/index.html
 
+      - name: Stage deploy files
+        run: |
+          mkdir -p deploy
+          cp build-web/index.html       deploy/
+          cp build-web/BombHunter.js    deploy/
+          cp build-web/BombHunter.wasm  deploy/
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build-web
+          path: deploy
 
   deploy:
     needs: build

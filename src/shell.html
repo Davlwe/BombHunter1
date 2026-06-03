@@ -49,7 +49,14 @@
     </div>
     <div id="loading">Loading...</div>
     <script>
-        var canvas = document.getElementById('canvas');
+        // CRITICAL: Emscripten's GLFW library reads Module.canvas to get the
+        // rendering surface. Without this, the WebGL context creation fails
+        // silently and the game never renders.
+        var Module = {
+            canvas: document.getElementById('canvas')
+        };
+
+        var canvas = Module.canvas;
         canvas.focus();
         canvas.addEventListener('click', function() { canvas.focus(); });
         var loading = document.getElementById('loading');
